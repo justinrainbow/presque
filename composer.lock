@@ -1,0 +1,29 @@
+{
+    "hash": "e5544f8a7c4a9d9b0cc676c3660f6afe",
+    "packages": [
+        {
+            "package": "predis/predis",
+            "version": "v0.7.3"
+        },
+        {
+            "package": "symfony/event-dispatcher",
+            "version": "dev-master",
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/event-dispatcher",
+            "version": "dev-master",
+            "source-reference": "451e0befb42a5552d4e143edcb74e3b4a9733bea",
+            "commit-date": "1342739894"
+        }
+    ],
+    "packages-dev": null,
+    "aliases": [
+
+    ],
+    "minimum-stability": "stable",
+    "stability-flags": {
+        "symfony/event-dispatcher": 20
+    }
+}

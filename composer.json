@@ -1,0 +1,13 @@
+{
+    "name": "presque/presque",
+    "type": "library",
+    "require": {
+        "predis/predis"           : "0.7.*",
+        "symfony/event-dispatcher": "2.1.*@dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}
