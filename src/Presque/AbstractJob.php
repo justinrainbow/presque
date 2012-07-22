@@ -40,7 +40,7 @@ abstract class AbstractJob implements JobInterface
      */
     public function isError()
     {
-        return StatusInterface::FAILED === $this->getStatus();
+        return !$this->isActive() && !$this->isSuccessful();
     }
 
     /**
