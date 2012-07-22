@@ -15,6 +15,16 @@ use Presque\Queue;
 
 class QueueTest extends TestCase
 {
+    public function testCreatingQueueInstance()
+    {
+        $storage = $this->getStorageMock();
+
+        $queue = new Queue('queue', $storage);
+
+        $this->assertEquals('queue', $queue->getName());
+        $this->assertEquals($storage, $queue->getStorage());
+    }
+
     public function testAddingJobsToQueue()
     {
         $job = $this->getMock('Presque\JobInterface');
@@ -65,6 +75,20 @@ class QueueTest extends TestCase
         $this->assertInstanceOf('Presque\JobInterface', $job);
         $this->assertEquals('Presque\Tests\Jobs\SimpleJob', $job->getClass());
         $this->assertEquals(array('simple', 'job'), $job->getArguments());
+    }
+
+    public function testAnEmptyQueue()
+    {
+        $storage = $this->getStorageMock();
+        $storage
+            ->expects($this->once())
+            ->method('pop')
+            ->with($this->equalTo('queuyou'), $this->equalTo(10))
+            ->will($this->returnValue(null));
+
+        $queue = new Queue('queuyou', $storage);
+
+        $this->assertFalse($queue->reserve());
     }
 
     private function getStorageMock()

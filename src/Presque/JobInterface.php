@@ -13,17 +13,52 @@ namespace Presque;
 
 interface JobInterface
 {
+    /**
+     * @param string $class Class that will be performing
+     * @param array  $args  List of arguments to pass to the `$class->perform()` method
+     *
+     * @throws InvalidArgumentException If `$class` does not implement the required methods
+     */
     static function create($class, array $args = array());
 
+    /**
+     * @return Boolean
+     */
     function isSuccessful();
 
+    /**
+     * @return Boolean
+     */
     function isError();
 
+    /**
+     * @return Boolean
+     */
     function isActive();
 
+    /**
+     * Does the work
+     */
     function perform();
 
+    /**
+     * Returns an instance of the `class`
+     *
+     * @return mixed
+     */
+    function getInstance();
+
+    /**
+     * Returns the class name associated with this Job
+     *
+     * @return string
+     */
     function getClass();
 
+    /**
+     * Returns a list of arguments to pass to the `perform` method
+     *
+     * @return array
+     */
     function getArguments();
 }

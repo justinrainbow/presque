@@ -9,15 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Tests\Jobs;
 
-final class Events
+class PrivateJob
 {
-	const WORK_STARTED = 'presque.work.started';
-
-	const WORK_PAUSED = 'presque.work.paused';
-
-	const WORK_STOPPED = 'presque.work.stopped';
-
-	const JOB_STARTED = 'presque.job.started';
+    private function perform()
+    {
+        throw new \RuntimeException('The PrivateJob should never be performed!');
+    }
 }

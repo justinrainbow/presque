@@ -27,28 +27,27 @@ abstract class AbstractJob implements JobInterface
         return $this->status;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function isSuccessful()
     {
         return StatusInterface::SUCCESS === $this->getStatus();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function isError()
     {
         return StatusInterface::FAILED === $this->getStatus();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function isActive()
     {
         return StatusInterface::RUNNING === $this->getStatus();
-    }
-
-    public function isTrackable()
-    {
-
-    }
-
-    public function getMaxAttempts()
-    {
-
     }
 }

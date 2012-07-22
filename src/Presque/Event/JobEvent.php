@@ -11,17 +11,38 @@
 
 namespace Presque\Event;
 
+use Presque\JobInterface;
+use Presque\QueueInterface;
 use Presque\WorkerInterface;
 
-class WorkerEvent extends Event
+class JobEvent extends Event
 {
     private $worker;
     private $canceled;
 
-    public function __construct(WorkerInterface $worker)
+    public function __construct(JobInterface $job, QueueInterface $queue, WorkerInterface $worker)
     {
-        $this->worker = $worker;
+        $this->job      = $job;
+        $this->queue    = $queue;
+        $this->worker   = $worker;
         $this->canceled = false;
+    }
+
+    public function getJob()
+    {
+        return $this->job;
+    }
+
+    public function setJob(JobInterface $job)
+    {
+        $this->job = $job;
+
+        return $this;
+    }
+
+    public function getQueue()
+    {
+        return $this->queue;
     }
 
     public function getWorker()

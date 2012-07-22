@@ -9,15 +9,8 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Tests\Jobs;
 
-final class Events
+class IncompleteJob
 {
-	const WORK_STARTED = 'presque.work.started';
-
-	const WORK_PAUSED = 'presque.work.paused';
-
-	const WORK_STOPPED = 'presque.work.stopped';
-
-	const JOB_STARTED = 'presque.job.started';
 }

@@ -12,12 +12,15 @@
 namespace Presque;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Presque\Event\JobEvent;
+use Presque\Event\WorkerEvent;
 
 class Worker implements WorkerInterface
 {
     private $id;
     private $queues;
     private $status;
+    private $eventDispatcher;
 
     public function __construct($id = null)
     {
@@ -111,6 +114,14 @@ class Worker implements WorkerInterface
      */
     public function start()
     {
+        if ($this->hasEventDispatcher()) {
+            $event = $this->eventDispatcher(Events::WORK_STARTED, new WorkerEvent($this));
+
+            if ($event->isCanceled()) {
+                return;
+            }
+        }
+
         $this->setStatus(StatusInterface::RUNNING);
 
         $this->run();
@@ -143,6 +154,16 @@ class Worker implements WorkerInterface
 
         if (!$job instanceof JobInterface) {
             return;
+        }
+
+        if ($this->hasEventDispatcher()) {
+            $event = $this->eventDispatcher->dispatch(Events::JOB_STARTED, new JobEvent($job, $queue, $this));
+
+            if ($event->isCanceled()) {
+                return;
+            }
+
+            $job = $event->getJob();
         }
 
         $job->perform();

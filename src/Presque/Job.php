@@ -25,11 +25,20 @@ class Job extends AbstractJob
     private $reflMethod;
     private $instance;
 
+    /**
+     * {@inheritDoc}
+     */
     public static function create($class, array $args = array())
     {
         return new static($class, $args);
     }
 
+    /**
+     * @param string $class Class that will be performing
+     * @param array  $args  List of arguments to pass to the `$class->perform()` method
+     *
+     * @throws InvalidArgumentException If `$class` does not implement the required methods
+     */
     public function __construct($class, array $args = array())
     {
         try {
@@ -50,8 +59,15 @@ class Job extends AbstractJob
         $method = $refl->getMethod('perform');
 
         if (!$method->isPublic()) {
+            $visibility = 'unknown';
+            if ($method->isPrivate()) {
+                $visibility = 'private';
+            } elseif ($method->isProtected()) {
+                $visibility = 'protected';
+            }
+
             throw new InvalidArgumentException(
-                'The "perform" method for class "' . $class . '" must be public, not ' . $method->getVisiblity()
+                'The "perform" method for class "' . $class . '" must be public, not ' . $visibility
             );
         }
 
@@ -69,6 +85,37 @@ class Job extends AbstractJob
         $this->reflMethod = $method;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function getClass()
+    {
+        return $this->class;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getArguments()
+    {
+        return $this->args;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getInstance()
+    {
+        if (!$this->instance) {
+            $this->instance = $this->reflClass->newInstance();
+        }
+
+        return $this->instance;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function perform()
     {
         $this->lastResult = $this->lastError = null;
@@ -88,29 +135,5 @@ class Job extends AbstractJob
         }
 
         return $this;
-    }
-
-    public function getMaxAttempts()
-    {
-
-    }
-
-    public function getClass()
-    {
-        return $this->class;
-    }
-
-    public function getArguments()
-    {
-        return $this->args;
-    }
-
-    public function getInstance()
-    {
-        if (!$this->instance) {
-            $this->instance = $this->reflClass->newInstance();
-        }
-
-        return $this->instance;
     }
 }

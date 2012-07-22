@@ -39,6 +39,30 @@ class JobTest extends TestCase
         Job::create('Presque\Tests\Jobs\SimpleJob', array(1));
     }
 
+    /**
+     * @expectedException Presque\Exception\InvalidArgumentException
+     */
+    public function testCreatingAJobWithInvalidPerformMethod()
+    {
+        Job::create('Presque\Tests\Jobs\InvalidJob');
+    }
+
+    /**
+     * @expectedException Presque\Exception\InvalidArgumentException
+     */
+    public function testCreatingAJobWithPrivatePerformMethod()
+    {
+        Job::create('Presque\Tests\Jobs\PrivateJob');
+    }
+
+    /**
+     * @expectedException Presque\Exception\InvalidArgumentException
+     */
+    public function testCreatingAnIncompleteJob()
+    {
+        Job::create('Presque\Tests\Jobs\IncompleteJob');
+    }
+
     public function testCreatingASimpleJob()
     {
         $job = Job::create('Presque\Tests\Jobs\SimpleJob', array('simple', 'jobs'));
