@@ -4,7 +4,7 @@
 $loader = require_once __DIR__.'/../vendor/autoload.php';
 $loader->add('Presque\\Example', __DIR__);
 
-$connection = new Predis\Client('tcp://maureen.local:6379');
+$connection = new Predis\Client(isset($_SERVER['REDIS_DSN']) ? $_SERVER['REDIS_DSN'] : 'tcp://127.0.0.1:6379');
 
 $storage = new Presque\Storage\PredisStorage($connection, 'presque');
 
