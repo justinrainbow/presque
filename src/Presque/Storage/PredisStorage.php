@@ -24,6 +24,16 @@ class PredisStorage implements StorageInterface
         $this->connection = $connection;
     }
 
+    public function setPrefix($prefix = null)
+    {
+        $this->prefix = $prefix;
+    }
+
+    public function getPrefix()
+    {
+        return $this->prefix;
+    }
+
     public function push($listName, $payload)
     {
         $this->connection->lpush($this->getKey($listName), json_encode($payload));
@@ -31,12 +41,10 @@ class PredisStorage implements StorageInterface
 
     public function pop($listName, $waitTimeout = null)
     {
-        if ($payload = $this->connection->blpop($this->getKey($listName), $waitTimeout)) {
-            if (is_array($payload)) {
-                return json_decode($payload[1], true);
-            }
+        $payload = $this->connection->blpop($this->getKey($listName), $waitTimeout);
 
-            return json_decode($payload, true);
+        if (is_array($payload) && isset($payload[1])) {
+            return json_decode($payload[1], true);
         }
 
         return false;

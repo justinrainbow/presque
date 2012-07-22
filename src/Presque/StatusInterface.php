@@ -18,4 +18,6 @@ interface StatusInterface
     CONST RUNNING = 4;
     CONST EXPIRED = 7;
     CONST DYING   = 8;
+    CONST STOPPING = 13;
+    CONST STOPPED  = 14;
 }

@@ -1,5 +1,5 @@
 {
-    "hash": "a0f218223e9199ae6501ce79cce77999",
+    "hash": "65e131308bb1ed1bc06c1a4f8a367a8e",
     "packages": [
         {
             "package": "predis/predis",
@@ -19,6 +19,10 @@
         }
     ],
     "packages-dev": [
+        {
+            "package": "mockery/mockery",
+            "version": "0.7.2"
+        },
         {
             "package": "monolog/monolog",
             "version": "1.1.0"

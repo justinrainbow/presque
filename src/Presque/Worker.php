@@ -14,8 +14,10 @@ namespace Presque;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Presque\Event\JobEvent;
 use Presque\Event\WorkerEvent;
+use Presque\Log\LoggerAwareInterface;
+use Presque\Log\LoggerInterface;
 
-class Worker implements WorkerInterface
+class Worker implements WorkerInterface, LoggerAwareInterface
 {
     private $id;
     private $queues;
@@ -24,7 +26,12 @@ class Worker implements WorkerInterface
 
     public function __construct($id = null)
     {
+        if (null === $id) {
+            $id = gethostname() . ':' . getmypid();
+        }
+
         $this->id = $id;
+        $this->queues = new \SplObjectStorage();
     }
 
     /**
@@ -40,7 +47,7 @@ class Worker implements WorkerInterface
      */
     public function addQueue(QueueInterface $queue)
     {
-        $this->queues[] = $queue;
+        $this->queues->attach($queue);
     }
 
     /**
@@ -48,8 +55,8 @@ class Worker implements WorkerInterface
      */
     public function removeQueue(QueueInterface $queue)
     {
-        if ($key = array_search($queue, $this->queues)) {
-            unset($this->queues[$queue]);
+        if ($this->queues->contains($queue)) {
+            $this->queues->detach($queue);
         }
     }
 
@@ -75,6 +82,14 @@ class Worker implements WorkerInterface
     public function hasEventDispatcher()
     {
         return null !== $this->eventDispatcher;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setLogger(LoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -106,7 +121,7 @@ class Worker implements WorkerInterface
      */
     public function isDying()
     {
-        return $this->getStatus() === StatusInterface::DYING;
+        return $this->getStatus() === StatusInterface::DYING || $this->getStatus() === StatusInterface::STOPPING;
     }
 
     /**
@@ -115,7 +130,7 @@ class Worker implements WorkerInterface
     public function start()
     {
         if ($this->hasEventDispatcher()) {
-            $event = $this->eventDispatcher(Events::WORK_STARTED, new WorkerEvent($this));
+            $event = $this->eventDispatcher->dispatch(Events::WORK_STARTED, new WorkerEvent($this));
 
             if ($event->isCanceled()) {
                 return;
@@ -125,6 +140,13 @@ class Worker implements WorkerInterface
         $this->setStatus(StatusInterface::RUNNING);
 
         $this->run();
+
+        $this->setStatus(StatusInterface::STOPPED);
+    }
+
+    public function stop()
+    {
+        $this->setStatus(StatusInterface::STOPPING);
     }
 
     /**
@@ -136,7 +158,7 @@ class Worker implements WorkerInterface
             foreach ($this->getQueues() as $queue) {
                 $this->process($queue);
 
-                if (!$this->isRunning() || $this->isDying()) {
+                if ($this->isDying() || !$this->isRunning()) {
                     return;
                 }
             }

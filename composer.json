@@ -6,7 +6,8 @@
         "symfony/event-dispatcher": "2.1.*@dev"
     },
     "require-dev": {
-        "monolog/monolog": "1.*"
+        "monolog/monolog": "1.*",
+        "mockery/mockery": "*"
     },
     "autoload": {
         "psr-0": {
