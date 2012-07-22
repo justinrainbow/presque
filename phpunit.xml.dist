@@ -21,6 +21,9 @@
     <filter>
         <whitelist>
             <directory>./src/Presque/</directory>
+            <exclude>
+                <file>../src/Presque/Compiler.php</file>
+            </exclude>
         </whitelist>
     </filter>
 </phpunit>

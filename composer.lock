@@ -1,5 +1,5 @@
 {
-    "hash": "530dc8835a863500a8f3f6f41f4b54b7",
+    "hash": "c02a0365ec383b0f77a21a33c4420e44",
     "packages": [
         {
             "package": "predis/predis",
@@ -38,6 +38,18 @@
             "version": "dev-master",
             "source-reference": "v2.1.0-BETA3",
             "commit-date": "1342347231"
+        },
+        {
+            "package": "symfony/finder",
+            "version": "dev-master",
+            "alias-pretty-version": "2.1.x-dev",
+            "alias-version": "2.1.9999999.9999999-dev"
+        },
+        {
+            "package": "symfony/finder",
+            "version": "dev-master",
+            "source-reference": "5c52af867863b213c588b1d2df681aa1d6695ea1",
+            "commit-date": "1342778082"
         }
     ],
     "aliases": [
@@ -46,6 +58,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "symfony/event-dispatcher": 20,
-        "symfony/console": 20
+        "symfony/console": 20,
+        "symfony/finder": 20
     }
 }
