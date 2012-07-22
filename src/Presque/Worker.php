@@ -17,8 +17,9 @@ class Worker implements WorkerInterface
 {
     private $id;
     private $queues;
+    private $status;
 
-    public function __construct($id)
+    public function __construct($id = null)
     {
         $this->id = $id;
     }
@@ -45,6 +46,31 @@ class Worker implements WorkerInterface
         return $this->queues;
     }
 
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null)
+    {
+        $this->eventDispatcher = $eventDispatcher;
+    }
+
+    public function getEventDispatcher()
+    {
+        return $this->eventDispatcher;
+    }
+
+    public function hasEventDispatcher()
+    {
+        return null !== $this->eventDispatcher;
+    }
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
     public function isRunning()
     {
         return $this->getStatus() === StatusInterface::RUNNING;
@@ -53,6 +79,13 @@ class Worker implements WorkerInterface
     public function isDying()
     {
         return $this->getStatus() === StatusInterface::DYING;
+    }
+
+    public function start()
+    {
+        $this->setStatus(StatusInterface::RUNNING);
+
+        $this->run();
     }
 
     public function run()
@@ -70,6 +103,20 @@ class Worker implements WorkerInterface
 
     protected function process(QueueInterface $queue)
     {
+        $job = $queue->reserve();
 
+        if (!$job instanceof JobInterface) {
+            return;
+        }
+
+        $job->perform();
+
+        if ($job->isSuccessful()) {
+            return;
+        }
+
+        if ($job->isError()) {
+
+        }
     }
 }

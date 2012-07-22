@@ -32,6 +32,10 @@ class PredisStorage implements StorageInterface
     public function pop($listName, $waitTimeout = null)
     {
         if ($payload = $this->connection->blpop($this->getKey($listName), $waitTimeout)) {
+            if (is_array($payload)) {
+                return json_decode($payload[1], true);
+            }
+
             return json_decode($payload, true);
         }
 

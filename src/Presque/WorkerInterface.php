@@ -25,11 +25,5 @@ interface WorkerInterface extends EventDispatcherAwareInterface
 
 	function isDying();
 
-    function start();
-
-    function pause();
-
-    function stop();
-
-    function abort();
+	function run();
 }
