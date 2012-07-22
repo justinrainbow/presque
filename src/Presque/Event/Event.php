@@ -15,4 +15,26 @@ use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
 
 class Event extends SymfonyEvent
 {
+    protected $defaultPrevented = false;
+
+    public function halt()
+    {
+        $this->stopEvent();
+    }
+
+    public function stopEvent()
+    {
+        $this->stopPropagation();
+        $this->preventDefault();
+    }
+
+    public function preventDefault()
+    {
+        $this->defaultPrevented = true;
+    }
+
+    public function isCanceled()
+    {
+        return $this->defaultPrevented === true;
+    }
 }

@@ -23,6 +23,7 @@ class Worker implements WorkerInterface, LoggerAwareInterface
     private $queues;
     private $status;
     private $eventDispatcher;
+    private $logger;
 
     public function __construct($id = null)
     {
@@ -95,6 +96,14 @@ class Worker implements WorkerInterface, LoggerAwareInterface
     /**
      * {@inheritDoc}
      */
+    public function hasLogger()
+    {
+        return null !== $this->logger;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function setStatus($status)
     {
         $this->status = $status;
@@ -141,9 +150,16 @@ class Worker implements WorkerInterface, LoggerAwareInterface
 
         $this->run();
 
+        if ($this->hasEventDispatcher()) {
+            $this->eventDispatcher->dispatch(Events::WORK_STOPPED, new WorkerEvent($this));
+        }
+
         $this->setStatus(StatusInterface::STOPPED);
     }
 
+    /**
+     * Starts the shutdown process for this worker
+     */
     public function stop()
     {
         $this->setStatus(StatusInterface::STOPPING);
@@ -155,12 +171,22 @@ class Worker implements WorkerInterface, LoggerAwareInterface
     public function run()
     {
         while ($this->isRunning()) {
-            foreach ($this->getQueues() as $queue) {
-                $this->process($queue);
+            $this->runLoop();
+        }
+    }
 
-                if ($this->isDying() || !$this->isRunning()) {
-                    return;
-                }
+    /**
+     * Runs a single pass through all the registered queues.
+     *
+     * Each QueueInterface is processed in the order it was added.
+     */
+    public function runLoop()
+    {
+        foreach ($this->getQueues() as $queue) {
+            $this->process($queue);
+
+            if ($this->isDying() || !$this->isRunning()) {
+                break;
             }
         }
     }
@@ -178,6 +204,15 @@ class Worker implements WorkerInterface, LoggerAwareInterface
             return;
         }
 
+        if ($this->hasLogger()) {
+            $this->logger->log(
+                sprintf('Starting job "%s"', $job),
+                LOG_DEBUG
+            );
+        }
+
+        $job->prepare();
+
         if ($this->hasEventDispatcher()) {
             $event = $this->eventDispatcher->dispatch(Events::JOB_STARTED, new JobEvent($job, $queue, $this));
 
@@ -190,12 +225,10 @@ class Worker implements WorkerInterface, LoggerAwareInterface
 
         $job->perform();
 
-        if ($job->isSuccessful()) {
-            return;
+        if ($this->hasEventDispatcher()) {
+            $this->eventDispatcher->dispatch(Events::JOB_FINISHED, new JobEvent($job, $queue, $this));
         }
 
-        if ($job->isError()) {
-
-        }
+        $job->complete();
     }
 }

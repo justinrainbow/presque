@@ -27,6 +27,17 @@ abstract class AbstractJob implements JobInterface
         return $this->status;
     }
 
+    public function prepare()
+    {
+        $this->lastResult = $this->lastError = null;
+
+        $this->setStatus(StatusInterface::RUNNING);
+    }
+
+    public function complete()
+    {
+    }
+
     /**
      * {@inheritDoc}
      */

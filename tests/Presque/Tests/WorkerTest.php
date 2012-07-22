@@ -13,7 +13,7 @@ namespace Presque\Tests;
 
 use Presque\Worker;
 use Presque\Events;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Presque\Job;
 use Mockery as m;
 
 class WorkerTest extends TestCase
@@ -41,7 +41,9 @@ class WorkerTest extends TestCase
         });
 
         $job
-            ->shouldReceive('perform')
+            ->shouldReceive('prepare')->ordered('lifecycle')
+            ->shouldReceive('perform')->ordered('lifecycle')
+            ->shouldReceive('complete')->ordered('lifecycle')
             ->shouldReceive('isSuccessful')
             ->shouldReceive('isError');
 
@@ -58,12 +60,14 @@ class WorkerTest extends TestCase
     public function testCancelingAWorkerFromStarting()
     {
         $eventDispatcher = $this->createEventDispatcher();
+        $logger          = $this->createLoggerMock();
 
         $worker = new Worker();
         $worker->setEventDispatcher($eventDispatcher);
+        $worker->setLogger($logger);
 
         $eventDispatcher->addListener(Events::WORK_STARTED, function ($event) {
-            $event->cancel();
+            $event->halt();
         });
 
         $worker->start();
@@ -73,14 +77,18 @@ class WorkerTest extends TestCase
     {
         $eventDispatcher = $this->createEventDispatcher();
         $queue           = $this->createQueueMock();
-        $job             = $this->createJobMock();
+        $job             = Job::create('Presque\Tests\Jobs\SimpleJob', array('simple', 'job'));
 
         $worker = new Worker();
         $worker->addQueue($queue);
         $worker->setEventDispatcher($eventDispatcher);
 
-        $eventDispatcher->addListener(Events::JOB_STARTED, function ($event) {
-            $event->cancel();
+        $test = $this;
+
+        $eventDispatcher->addListener(Events::JOB_STARTED, function ($event) use ($test) {
+            $event->halt();
+
+            $test->assertTrue($event->getJob()->isActive());
 
             // need to stop the worker... or the test will just keep going
             $event->getWorker()->stop();
@@ -92,18 +100,63 @@ class WorkerTest extends TestCase
         $worker->start();
     }
 
-    protected function createEventDispatcher()
+    public function testReplacingAJobInEvent()
     {
-        return new EventDispatcher();
+        $eventDispatcher = $this->createEventDispatcher();
+        $queue           = $this->createQueueMock();
+        $job             = Job::create('Presque\Tests\Jobs\SimpleJob', array('simple', 'job'));
+        $secondJob       = Job::create('Presque\Tests\Jobs\SimpleJob', array('failed', 'job'));
+
+        $worker = new Worker();
+        $worker->addQueue($queue);
+        $worker->setEventDispatcher($eventDispatcher);
+
+        $test = $this;
+
+        $eventDispatcher->addListener(Events::JOB_STARTED, function ($event) use (&$secondJob) {
+            $event->setJob($secondJob);
+        });
+
+        $eventDispatcher->addListener(Events::JOB_FINISHED, function ($event) use ($test) {
+            $test->assertInstanceOf('Presque\QueueInterface', $event->getQueue());
+            $test->assertTrue($event->getJob()->isError());
+        });
+
+        $queue
+            ->shouldReceive('reserve')->once()->andReturn($job);
+
+        $worker->runLoop();
     }
 
-    protected function createQueueMock()
+    public function testDoingNothingInALoop()
     {
-        return m::mock('Presque\QueueInterface');
+        $queue = $this->createQueueMock();
+
+        $worker = new Worker();
+        $worker->addQueue($queue);
+
+        $queue
+            ->shouldReceive('reserve')->once()->andReturn(null);
+
+        $worker->runLoop();
     }
 
-    protected function createJobMock()
+    public function testLoggingJobActivity()
     {
-        return m::mock('Presque\Job');
+        $queue  = $this->createQueueMock();
+        $job    = Job::create('Presque\Tests\Jobs\SimpleJob', array('simple', 'job'));
+        $logger = $this->createLoggerMock();
+
+        $worker = new Worker();
+        $worker->addQueue($queue);
+        $worker->setLogger($logger);
+
+        $logger
+            ->shouldReceive('log')->once()->with('Starting job "Presque\Tests\Jobs\SimpleJob"', LOG_DEBUG);
+
+        $queue
+            ->shouldReceive('reserve')->once()->andReturn($job);
+
+        $worker->runLoop();
     }
 }

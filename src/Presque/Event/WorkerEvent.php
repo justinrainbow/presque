@@ -16,26 +16,14 @@ use Presque\WorkerInterface;
 class WorkerEvent extends Event
 {
     private $worker;
-    private $canceled;
 
     public function __construct(WorkerInterface $worker)
     {
         $this->worker = $worker;
-        $this->canceled = false;
     }
 
     public function getWorker()
     {
         return $this->worker;
-    }
-
-    public function cancel()
-    {
-        $this->canceled = true;
-    }
-
-    public function isCanceled()
-    {
-        return $this->canceled;
     }
 }

@@ -41,6 +41,10 @@ interface JobInterface
      */
     function perform();
 
+    function prepare();
+
+    function complete();
+
     /**
      * Returns an instance of the `class`
      *

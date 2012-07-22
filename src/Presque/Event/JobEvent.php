@@ -18,14 +18,12 @@ use Presque\WorkerInterface;
 class JobEvent extends Event
 {
     private $worker;
-    private $canceled;
 
     public function __construct(JobInterface $job, QueueInterface $queue, WorkerInterface $worker)
     {
-        $this->job      = $job;
-        $this->queue    = $queue;
-        $this->worker   = $worker;
-        $this->canceled = false;
+        $this->job    = $job;
+        $this->queue  = $queue;
+        $this->worker = $worker;
     }
 
     public function getJob()
@@ -48,15 +46,5 @@ class JobEvent extends Event
     public function getWorker()
     {
         return $this->worker;
-    }
-
-    public function cancel()
-    {
-        $this->canceled = true;
-    }
-
-    public function isCanceled()
-    {
-        return $this->canceled;
     }
 }

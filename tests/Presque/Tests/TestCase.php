@@ -11,6 +11,28 @@
 
 namespace Presque\Tests;
 
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Mockery as m;
+
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
+    protected function createLoggerMock()
+    {
+        return m::mock('Presque\Log\LoggerInterface');
+    }
+
+    protected function createEventDispatcher()
+    {
+        return new EventDispatcher();
+    }
+
+    protected function createQueueMock()
+    {
+        return m::mock('Presque\QueueInterface');
+    }
+
+    protected function createJobMock()
+    {
+        return m::mock('Presque\Job');
+    }
 }

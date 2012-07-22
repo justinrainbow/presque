@@ -20,4 +20,11 @@ interface LoggerAwareInterface
      * @param LoggerInterface $logger
      */
     function setLogger(LoggerInterface $logger = null);
+
+    /**
+     * Checks if a LoggerInterface is available.
+     *
+     * @return Boolean
+     */
+    function hasLogger();
 }

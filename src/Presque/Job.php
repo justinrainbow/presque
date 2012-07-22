@@ -118,10 +118,6 @@ class Job extends AbstractJob
      */
     public function perform()
     {
-        $this->lastResult = $this->lastError = null;
-
-        $this->setStatus(StatusInterface::RUNNING);
-
         try {
             $this->lastResult = $this->reflMethod->invokeArgs(
                 $this->getInstance(),
@@ -135,5 +131,10 @@ class Job extends AbstractJob
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->getClass();
     }
 }

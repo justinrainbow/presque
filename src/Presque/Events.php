@@ -20,4 +20,6 @@ final class Events
 	const WORK_STOPPED = 'presque.work.stopped';
 
 	const JOB_STARTED = 'presque.job.started';
+
+	const JOB_FINISHED = 'presque.job.finished';
 }
