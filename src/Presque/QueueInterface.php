@@ -21,9 +21,9 @@ interface QueueInterface
 
     function setStorage(StorageInterface $storage);
 
-    function getWaitTime();
+    function getTimeout();
 
     function enqueue(JobInterface $job);
 
-    function dequeue($waitFor = null);
+    function reserve();
 }

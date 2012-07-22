@@ -17,16 +17,23 @@ class Queue implements QueueInterface
 {
     protected $name;
     protected $storage;
+    protected $timeout;
 
-    public function __construct($name, StorageInterface $storage = null)
+    public function __construct($name, StorageInterface $storage = null, $timeout = 10)
     {
         $this->name    = $name;
         $this->storage = $storage;
+        $this->timeout = $timeout;
     }
 
     public function getName()
     {
         return $this->name;
+    }
+
+    public function getTimeout()
+    {
+        return $this->timeout;
     }
 
     public function getStorage()
@@ -39,11 +46,6 @@ class Queue implements QueueInterface
         $this->storage = $storage;
     }
 
-    public function getWaitTime()
-    {
-
-    }
-
     public function enqueue(JobInterface $job)
     {
         $this->storage->push($this->name, array(
@@ -52,8 +54,14 @@ class Queue implements QueueInterface
         ));
     }
 
-    public function dequeue($waitFor = null)
+    public function reserve()
     {
+        $payload = $this->storage->pop($this->name, $this->getTimeout());
 
+        if (!is_array($payload)) {
+            return false;
+        }
+
+        return Job::create($payload['class'], $payload['args']);
     }
 }

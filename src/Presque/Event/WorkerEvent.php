@@ -9,13 +9,14 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Event;
 
-interface StatusInterface
+class WorkerEvent extends Event
 {
-    CONST SUCCESS = 1;
-    CONST FAILED  = 2;
-    CONST RUNNING = 4;
-    CONST EXPIRED = 7;
-    CONST DYING   = 8;
+    private $worker;
+
+    public function __construct(WorkerInterface $worker)
+    {
+        $this->worker = $worker;
+    }
 }

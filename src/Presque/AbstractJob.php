@@ -15,6 +15,18 @@ use Presque\StatusInterface;
 
 abstract class AbstractJob implements JobInterface
 {
+    protected $status;
+
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
     public function isSuccessful()
     {
         return StatusInterface::SUCCESS === $this->getStatus();

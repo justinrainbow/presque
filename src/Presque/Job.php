@@ -18,6 +18,9 @@ class Job extends AbstractJob
     protected $class;
     protected $args;
 
+    protected $lastResult;
+    protected $lastError;
+
     private $reflClass;
     private $reflMethod;
     private $instance;
@@ -68,10 +71,23 @@ class Job extends AbstractJob
 
     public function perform()
     {
-        return $this->reflMethod->invokeArgs(
-            $this->getInstance(),
-            $this->getArguments()
-        );
+        $this->lastResult = $this->lastError = null;
+
+        $this->setStatus(StatusInterface::RUNNING);
+
+        try {
+            $this->lastResult = $this->reflMethod->invokeArgs(
+                $this->getInstance(),
+                $this->getArguments()
+            );
+
+            $this->setStatus(StatusInterface::SUCCESS);
+        } catch (\Exception $e) {
+            $this->setStatus(StatusInterface::FAILED);
+            $this->lastError = $e;
+        }
+
+        return $this;
     }
 
     public function getMaxAttempts()

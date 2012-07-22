@@ -58,7 +58,7 @@ class JobTest extends TestCase
         }
 
         $job = Job::create('Presque\Tests\Jobs\SimpleJob', array('simple', 'job'));
-        $this->assertTrue($job->perform());
+        $this->assertTrue($job->perform()->isSuccessful());
     }
 
 }

@@ -13,6 +13,18 @@ namespace Presque;
 
 interface WorkerInterface extends EventDispatcherAwareInterface
 {
+	function getId();
+
+	function addQueue(QueueInterface $queue);
+
+	function removeQueue(QueueInterface $queue);
+
+	function getQueues();
+
+	function isRunning();
+
+	function isDying();
+
     function start();
 
     function pause();

@@ -26,7 +26,7 @@ class PredisStorage implements StorageInterface
 
     public function push($listName, $payload)
     {
-
+        $this->connection->lpush($this->getKey($listName), json_encode($payload));
     }
 
     public function pop($listName, $waitTimeout = null)

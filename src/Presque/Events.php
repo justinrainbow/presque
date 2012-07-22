@@ -13,4 +13,9 @@ namespace Presque;
 
 final class Events
 {
+	const WORK_STARTED = 'presque.work.started';
+
+	const WORK_PAUSED = 'presque.work.paused';
+
+	const WORK_STOPPED = 'presque.work.stopped';
 }

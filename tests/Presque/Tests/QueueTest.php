@@ -18,7 +18,7 @@ class QueueTest extends TestCase
     public function testAddingJobsToQueue()
     {
         $job = $this->getMock('Presque\JobInterface');
-        $storage = $this->getMock('Presque\Storage\StorageInterface');
+        $storage = $this->getStorageMock();
 
         $queue = new Queue('queue');
         $queue->setStorage($storage);
@@ -44,6 +44,31 @@ class QueueTest extends TestCase
             ->with($this->equalTo('queue'), $this->equalTo($expectedPayload));
 
         $queue->enqueue($job);
+    }
 
+    public function testGrabbingJobFromQueue()
+    {
+        $storage = $this->getStorageMock();
+        $storage
+            ->expects($this->once())
+            ->method('pop')
+            ->with($this->equalTo('queuyou'), $this->equalTo(10))
+            ->will($this->returnValue(array(
+                'class' => 'Presque\Tests\Jobs\SimpleJob',
+                'args'  => array('simple', 'job')
+            )));
+
+        $queue = new Queue('queuyou', $storage);
+
+        $job = $queue->reserve();
+
+        $this->assertInstanceOf('Presque\JobInterface', $job);
+        $this->assertEquals('Presque\Tests\Jobs\SimpleJob', $job->getClass());
+        $this->assertEquals(array('simple', 'job'), $job->getArguments());
+    }
+
+    private function getStorageMock()
+    {
+        return $this->getMock('Presque\Storage\StorageInterface');
     }
 }
