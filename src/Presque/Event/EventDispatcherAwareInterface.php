@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Event;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -28,13 +28,6 @@ interface EventDispatcherAwareInterface
      * @param EventDispatcherInterface $eventDispatcher
      */
     function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null);
-
-    /**
-     * Returns an instance of the EventDispatcher
-     *
-     * @return EventDispatcherInterface
-     */
-    function getEventDispatcher();
 
     /**
      * Checks if there is an EventDispatcher available to the current object.

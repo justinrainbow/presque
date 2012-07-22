@@ -5,6 +5,9 @@
         "predis/predis"           : "0.7.*",
         "symfony/event-dispatcher": "2.1.*@dev"
     },
+    "require-dev": {
+        "monolog/monolog": "1.*"
+    },
     "autoload": {
         "psr-0": {
             "": "src/"

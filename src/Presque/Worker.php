@@ -24,16 +24,25 @@ class Worker implements WorkerInterface
         $this->id = $id;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function addQueue(QueueInterface $queue)
     {
         $this->queues[] = $queue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function removeQueue(QueueInterface $queue)
     {
         if ($key = array_search($queue, $this->queues)) {
@@ -41,46 +50,65 @@ class Worker implements WorkerInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getQueues()
     {
         return $this->queues;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null)
     {
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function getEventDispatcher()
-    {
-        return $this->eventDispatcher;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function hasEventDispatcher()
     {
         return null !== $this->eventDispatcher;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setStatus($status)
     {
         $this->status = $status;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getStatus()
     {
         return $this->status;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function isRunning()
     {
         return $this->getStatus() === StatusInterface::RUNNING;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function isDying()
     {
         return $this->getStatus() === StatusInterface::DYING;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function start()
     {
         $this->setStatus(StatusInterface::RUNNING);
@@ -88,6 +116,9 @@ class Worker implements WorkerInterface
         $this->run();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function run()
     {
         while ($this->isRunning()) {
@@ -101,6 +132,11 @@ class Worker implements WorkerInterface
         }
     }
 
+    /**
+     * Checks and executes a new Job for the given `$queue`
+     *
+     * @param QueueInterface $queue
+     */
     protected function process(QueueInterface $queue)
     {
         $job = $queue->reserve();
