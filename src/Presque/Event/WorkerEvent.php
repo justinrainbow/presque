@@ -11,7 +11,7 @@
 
 namespace Presque\Event;
 
-use Presque\WorkerInterface;
+use Presque\Worker\WorkerInterface;
 
 class WorkerEvent extends Event
 {

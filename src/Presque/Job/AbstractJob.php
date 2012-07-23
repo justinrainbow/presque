@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Job;
 
 use Presque\StatusInterface;
 

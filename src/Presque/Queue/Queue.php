@@ -9,11 +9,13 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Queue;
 
 use Presque\Storage\StorageInterface;
+use Presque\Job\JobInterface;
+use Presque\Job\Job;
 
-class Queue implements QueueInterface
+class Queue extends AbstractQueue
 {
     protected $name;
     protected $storage;
@@ -26,26 +28,41 @@ class Queue implements QueueInterface
         $this->timeout = $timeout;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getTimeout()
     {
         return $this->timeout;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getStorage()
     {
         return $this->storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function setStorage(StorageInterface $storage)
     {
         $this->storage = $storage;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function enqueue(JobInterface $job)
     {
         $this->storage->push($this->name, array(
@@ -54,6 +71,9 @@ class Queue implements QueueInterface
         ));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function reserve()
     {
         $payload = $this->storage->pop($this->name, $this->getTimeout());
@@ -62,6 +82,6 @@ class Queue implements QueueInterface
             return false;
         }
 
-        return Job::create($payload['class'], $payload['args']);
+        return Job::recreate($payload);
     }
 }

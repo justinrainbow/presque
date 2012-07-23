@@ -9,7 +9,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Job;
 
 interface JobInterface
 {
@@ -20,6 +20,17 @@ interface JobInterface
      * @throws InvalidArgumentException If `$class` does not implement the required methods
      */
     static function create($class, array $args = array());
+
+    /**
+     * Recreates a Job instance from the payload data.
+     *
+     * @param array $payload
+     *
+     * @return JobInterface
+     *
+     * @throws InvalidArgumentException If `$payload` is not valid
+     */
+    static function recreate(array $payload);
 
     /**
      * @return Boolean

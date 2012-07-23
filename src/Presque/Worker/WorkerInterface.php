@@ -9,9 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Worker;
 
 use Presque\Event\EventDispatcherAwareInterface;
+use Presque\Queue\QueueInterface;
 
 interface WorkerInterface extends EventDispatcherAwareInterface
 {

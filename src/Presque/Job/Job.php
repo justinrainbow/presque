@@ -9,9 +9,10 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Job;
 
 use Presque\Exception\InvalidArgumentException;
+use Presque\StatusInterface;
 
 class Job extends AbstractJob
 {
@@ -31,6 +32,14 @@ class Job extends AbstractJob
     public static function create($class, array $args = array())
     {
         return new static($class, $args);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function recreate(array $payload)
+    {
+        return new static($payload['class'], $payload['args']);
     }
 
     /**

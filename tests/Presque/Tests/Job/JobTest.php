@@ -11,7 +11,8 @@
 
 namespace Presque\Tests;
 
-use Presque\Job;
+use Presque\Tests\TestCase;
+use Presque\Job\Job;
 
 class JobTest extends TestCase
 {

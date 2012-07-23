@@ -28,11 +28,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
 
     protected function createQueueMock()
     {
-        return m::mock('Presque\QueueInterface');
+        return m::mock('Presque\Queue\QueueInterface');
     }
 
     protected function createJobMock()
     {
-        return m::mock('Presque\Job');
+        return m::mock('Presque\Job\Job');
     }
 }

@@ -11,9 +11,9 @@
 
 namespace Presque\Event;
 
-use Presque\JobInterface;
-use Presque\QueueInterface;
-use Presque\WorkerInterface;
+use Presque\Job\JobInterface;
+use Presque\Queue\QueueInterface;
+use Presque\Worker\WorkerInterface;
 
 class JobEvent extends Event
 {

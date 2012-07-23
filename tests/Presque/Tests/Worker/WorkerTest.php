@@ -11,9 +11,10 @@
 
 namespace Presque\Tests;
 
-use Presque\Worker;
+use Presque\Tests\TestCase;
+use Presque\Worker\Worker;
 use Presque\Events;
-use Presque\Job;
+use Presque\Job\Job;
 use Mockery as m;
 
 class WorkerTest extends TestCase
@@ -33,7 +34,7 @@ class WorkerTest extends TestCase
         $test = $this;
 
         $eventDispatcher->addListener(Events::WORK_STARTED, function ($event) use (&$test) {
-            $test->assertTrue($event->getWorker() instanceof \Presque\WorkerInterface);
+            $test->assertTrue($event->getWorker() instanceof \Presque\Worker\WorkerInterface);
         });
 
         $eventDispatcher->addListener(Events::JOB_STARTED, function ($event) use (&$test) {
@@ -118,7 +119,7 @@ class WorkerTest extends TestCase
         });
 
         $eventDispatcher->addListener(Events::JOB_FINISHED, function ($event) use ($test) {
-            $test->assertInstanceOf('Presque\QueueInterface', $event->getQueue());
+            $test->assertInstanceOf('Presque\Queue\QueueInterface', $event->getQueue());
             $test->assertTrue($event->getJob()->isError());
         });
 

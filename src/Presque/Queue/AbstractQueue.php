@@ -9,21 +9,12 @@
  * file that was distributed with this source code.
  */
 
-namespace Presque;
+namespace Presque\Queue;
 
 use Presque\Storage\StorageInterface;
+use Presque\Job\JobInterface;
+use Presque\Job\Job;
 
-interface QueueInterface
+abstract class AbstractQueue implements QueueInterface
 {
-    function getName();
-
-    function getStorage();
-
-    function setStorage(StorageInterface $storage);
-
-    function getTimeout();
-
-    function enqueue(JobInterface $job);
-
-    function reserve();
 }

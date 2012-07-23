@@ -11,7 +11,8 @@
 
 namespace Presque\Tests;
 
-use Presque\Queue;
+use Presque\Queue\Queue;
+use Presque\Tests\TestCase;
 
 class QueueTest extends TestCase
 {
@@ -27,7 +28,7 @@ class QueueTest extends TestCase
 
     public function testAddingJobsToQueue()
     {
-        $job = $this->getMock('Presque\JobInterface');
+        $job = $this->getMock('Presque\Job\JobInterface');
         $storage = $this->getStorageMock();
 
         $queue = new Queue('queue');
@@ -72,7 +73,7 @@ class QueueTest extends TestCase
 
         $job = $queue->reserve();
 
-        $this->assertInstanceOf('Presque\JobInterface', $job);
+        $this->assertInstanceOf('Presque\Job\JobInterface', $job);
         $this->assertEquals('Presque\Tests\Jobs\SimpleJob', $job->getClass());
         $this->assertEquals(array('simple', 'job'), $job->getArguments());
     }
