@@ -38,7 +38,7 @@ class PhpredisStorage implements StorageInterface
 
     public function push($listName, $payload)
     {
-        $this->connection->lPush($listName, json_encode($payload));
+        $this->connection->rPush($listName, json_encode($payload));
     }
 
     public function pop($listName, $waitTimeout = null)

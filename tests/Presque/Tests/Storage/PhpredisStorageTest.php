@@ -29,7 +29,7 @@ class PhpredisStorageTest extends TestCase
 
         $this->redis
             ->expects($this->once())
-            ->method('lPush')
+            ->method('rPush')
             ->with($this->equalTo('list'), $this->equalTo(json_encode($payload)));
 
         $this->storage->push('list', $payload);

@@ -28,7 +28,7 @@ class PredisStorageTest extends TestCase
         );
 
         $this->predis
-            ->shouldReceive('lpush')
+            ->shouldReceive('rpush')
             ->with('list', json_encode($payload))
             ->once();
 
