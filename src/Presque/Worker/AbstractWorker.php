@@ -14,6 +14,7 @@ namespace Presque\Worker;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Presque\Event\JobEvent;
 use Presque\Event\WorkerEvent;
+use Presque\Event\EventDispatcherAwareInterface;
 use Presque\Log\LoggerAwareInterface;
 use Presque\Log\LoggerInterface;
 use Presque\Queue\QueueInterface;
@@ -21,7 +22,7 @@ use Presque\Job\JobInterface;
 use Presque\StatusInterface;
 use Presque\Events;
 
-abstract class AbstractWorker implements WorkerInterface, LoggerAwareInterface
+abstract class AbstractWorker implements WorkerInterface, LoggerAwareInterface, EventDispatcherAwareInterface
 {
     protected $id;
     protected $status;

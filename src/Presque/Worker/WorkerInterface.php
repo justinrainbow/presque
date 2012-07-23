@@ -11,10 +11,9 @@
 
 namespace Presque\Worker;
 
-use Presque\Event\EventDispatcherAwareInterface;
 use Presque\Queue\QueueInterface;
 
-interface WorkerInterface extends EventDispatcherAwareInterface
+interface WorkerInterface
 {
 	function getId();
 
