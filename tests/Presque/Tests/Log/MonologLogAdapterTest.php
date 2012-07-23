@@ -23,25 +23,25 @@ class MonologLogAdapterTest extends TestCase
     /**
      * @dataProvider getLogLevels
      */
-    public function testLoggingMessages($level, $expectedLevel)
+    public function testLoggingMessages($level)
     {
         $this->logger
             ->expects($this->once())
-            ->method('addRecord')
-            ->with($this->equalTo($expectedLevel), $this->equalTo("My message"));
+            ->method($level)
+            ->with($this->equalTo("My message"));
 
-        $this->adapter->log("My message", $level);
+        $this->adapter->{$level}("My message");
     }
 
     public function getLogLevels()
     {
         return array(
-            array(LOG_DEBUG,   Logger::DEBUG),
-            array(LOG_INFO,    Logger::INFO),
-            array(LOG_WARNING, Logger::WARNING),
-            array(LOG_ERR,     Logger::ERROR),
-            array(LOG_CRIT,    Logger::CRITICAL),
-            array(LOG_ALERT,   Logger::ALERT),
+            array('debug'),
+            array('info'),
+            array('warn'),
+            array('err'),
+            array('crit'),
+            array('emerg'),
         );
     }
 
