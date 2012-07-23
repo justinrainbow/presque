@@ -49,7 +49,7 @@ class Compiler
         $finder = new Finder();
         $finder->files()
             ->ignoreVCS(true)
-            ->name('*.php')
+            ->name('*')
             ->notName('Compiler.php')
             ->in(__DIR__)
         ;
@@ -61,10 +61,10 @@ class Compiler
             ->files()
             ->ignoreVCS(true)
             ->name('*.php')
+            ->name('*.xsd')
             ->notName('*Test.php')
             ->in(array(
-                $vendorDir.'symfony/event-dispatcher',
-                $vendorDir.'symfony/console',
+                $vendorDir.'symfony',
                 $vendorDir.'predis/predis/lib',
                 $vendorDir.'monolog/monolog/src',
                 $vendorDir.'composer',

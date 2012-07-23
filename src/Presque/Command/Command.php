@@ -15,35 +15,20 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Command\Command as BaseCommand;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Presque\Job;
 
-class QueueJobCommand extends Command
+abstract class Command extends BaseCommand implements ContainerAwareInterface
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function configure()
-    {
-        $this
-            ->setName('queue')
-            ->setDescription('Adds a job to the queue')
-            ->setDefinition(array(
-
-            ))
-            ->setHelp(<<<EOT
-The <info>%command.name%</info> command adds a new job to the queue.
-
-  <info>%command.full_name%</info> queue [job] [args]
-
-EOT
-            );
-    }
+    protected $container;
 
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function setContainer(ContainerInterface $container = null)
     {
-        
+        $this->container = $container;
     }
 }

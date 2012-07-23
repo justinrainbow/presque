@@ -1,9 +1,17 @@
 {
-    "hash": "c02a0365ec383b0f77a21a33c4420e44",
+    "hash": "e02905b29159bce01cc844d9c5cb682c",
     "packages": [
         {
             "package": "predis/predis",
             "version": "v0.7.3"
+        },
+        {
+            "package": "symfony/config",
+            "version": "v2.0.16"
+        },
+        {
+            "package": "symfony/dependency-injection",
+            "version": "v2.0.16"
         },
         {
             "package": "symfony/event-dispatcher",
@@ -16,6 +24,10 @@
             "version": "dev-master",
             "source-reference": "451e0befb42a5552d4e143edcb74e3b4a9733bea",
             "commit-date": "1342739894"
+        },
+        {
+            "package": "symfony/yaml",
+            "version": "v2.0.16"
         }
     ],
     "packages-dev": [
@@ -30,20 +42,8 @@
         {
             "package": "symfony/console",
             "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
-        },
-        {
-            "package": "symfony/console",
-            "version": "dev-master",
             "source-reference": "v2.1.0-BETA3",
             "commit-date": "1342347231"
-        },
-        {
-            "package": "symfony/finder",
-            "version": "dev-master",
-            "alias-pretty-version": "2.1.x-dev",
-            "alias-version": "2.1.9999999.9999999-dev"
         },
         {
             "package": "symfony/finder",
@@ -57,8 +57,11 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "symfony/event-dispatcher": 20,
-        "symfony/console": 20,
-        "symfony/finder": 20
+        "symfony/console": 0,
+        "symfony/config": 0,
+        "symfony/dependency-injection": 0,
+        "symfony/event-dispatcher": 0,
+        "symfony/yaml": 0,
+        "symfony/finder": 0
     }
 }

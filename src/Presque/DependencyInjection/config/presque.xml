@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="presque.event_dispatcher.class">Symfony\Component\EventDispatcher\EventDispatcher</parameter>
+
+        <parameter key="presque.command.queue_job.class">Presque\Command\QueueJobCommand</parameter>
+        <parameter key="presque.command.worker.class">Presque\Command\WorkerCommand</parameter>
+    </parameters>
+
+    <services>
+        <service id="presque.event_dispatcher" class="%presque.event_dispatcher.class%" />
+
+        <service id="presque.command.queue_job" class="%presque.command.queue_job.class%">
+            <tag name="presque.command" />
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+
+        <service id="presque.command.worker" class="%presque.command.worker.class%">
+            <tag name="presque.command" />
+            <call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>
+    </services>
+
+</container>

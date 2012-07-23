@@ -2,14 +2,23 @@
     "name": "presque/presque",
     "type": "library",
     "require": {
-        "predis/predis"           : "0.7.*",
-        "symfony/event-dispatcher": "2.1.*@dev"
+        "predis/predis"               : "0.7.*",
+        "symfony/console"             : ">=2.0.0,<2.2.0-dev",
+        "symfony/config"              : ">=2.0.0,<2.2.0-dev",
+        "symfony/dependency-injection": ">=2.0.0,<2.2.0-dev",
+        "symfony/event-dispatcher"    : ">=2.0.0,<2.2.0-dev",
+        "symfony/yaml"                : ">=2.0.0,<2.2.0-dev",
+        "symfony/finder"              : ">=2.0.0,<2.2.0-dev"
     },
     "require-dev": {
-        "monolog/monolog": "1.*",
-        "mockery/mockery": "*",
-        "symfony/console": "2.1.*@dev",
-        "symfony/finder" : "2.1.*@dev"
+        "monolog/monolog"             : "1.*",
+        "mockery/mockery"             : "*",
+        "symfony/console"             : "@stable",
+        "symfony/config"              : "@stable",
+        "symfony/dependency-injection": "@stable",
+        "symfony/event-dispatcher"    : "@stable",
+        "symfony/yaml"                : "@stable",
+        "symfony/finder"              : "@stable"
     },
     "suggest": {
         "symfony/console": "Needed in order to use the presque command"
