@@ -11,19 +11,17 @@
 
 namespace Presque\Log;
 
-use Monolog\Logger;
+use Symfony\Component\HttpKernel\Log\LoggerInterface as SymfonyLoggerInterface;
 
 /**
- * Log adapter for Monolog
- *
- * @link https://github.com/Seldaek/monolog
+ * Symfony HttpKernel LoggerInterface adapter
  */
-class MonologLogAdapter extends AbstractLogAdapter
+class SymfonyLogAdapter extends AbstractLogAdapter
 {
     /**
      * {@inheritdoc}
      */
-    public function __construct(Logger $logObject)
+    public function __construct(SymfonyLoggerInterface $logObject)
     {
         $this->log = $logObject;
     }

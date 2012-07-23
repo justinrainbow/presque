@@ -111,10 +111,7 @@ class Worker extends AbstractWorker
         }
 
         if ($this->hasLogger()) {
-            $this->logger->log(
-                sprintf('Starting job "%s"', $job),
-                LOG_DEBUG
-            );
+            $this->logger->debug(sprintf('Starting job "%s"', $job));
         }
 
         $job->prepare();

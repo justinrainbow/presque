@@ -11,7 +11,48 @@
 
 namespace Presque\Log;
 
+/**
+ * Simple log adapter interface
+ */
 interface LoggerInterface
 {
-	function log($message, $priority = LOG_INFO, $extra = null);
+    /**
+     * @api
+     */
+    function emerg($message, array $context = array());
+
+    /**
+     * @api
+     */
+    function alert($message, array $context = array());
+
+    /**
+     * @api
+     */
+    function crit($message, array $context = array());
+
+    /**
+     * @api
+     */
+    function err($message, array $context = array());
+
+    /**
+     * @api
+     */
+    function warn($message, array $context = array());
+
+    /**
+     * @api
+     */
+    function notice($message, array $context = array());
+
+    /**
+     * @api
+     */
+    function info($message, array $context = array());
+
+    /**
+     * @api
+     */
+    function debug($message, array $context = array());
 }

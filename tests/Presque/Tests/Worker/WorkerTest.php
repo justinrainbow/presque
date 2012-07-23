@@ -153,7 +153,7 @@ class WorkerTest extends TestCase
         $worker->setLogger($logger);
 
         $logger
-            ->shouldReceive('log')->once()->with('Starting job "Presque\Tests\Jobs\SimpleJob"', LOG_DEBUG);
+            ->shouldReceive('debug')->once()->with('Starting job "Presque\Tests\Jobs\SimpleJob"');
 
         $queue
             ->shouldReceive('reserve')->once()->andReturn($job);
