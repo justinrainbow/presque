@@ -20,6 +20,7 @@ use Presque\Job\JobFactoryInterface;
 use Presque\Event\EventDispatcherAwareInterface;
 use Presque\Log\LoggerAwareInterface;
 use Presque\Log\LoggerInterface;
+use Presque\Storage\StorageInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -36,6 +37,7 @@ class Presque implements EventDispatcherAwareInterface, LoggerAwareInterface
     protected $jobFactory;
     protected $dispatcher;
     protected $logger;
+    protected $storage;
 
     public function __construct(
         WorkerFactoryInterface $workerFactory = null,
@@ -72,10 +74,14 @@ class Presque implements EventDispatcherAwareInterface, LoggerAwareInterface
     /**
      * @see Presque\Queue\QueueFactoryInterface::create
      */
-    public function createQueue($name)
+    public function createQueue($name, StorageInterface $storage = null)
     {
+        if (null === $storage && null !== $this->storage) {
+            $storage = $this->storage;
+        }
+
         return $this->injectServices(
-            $this->queueFactory->create($name)
+            $this->queueFactory->create($name, $storage)
         );
     }
 
@@ -87,6 +93,11 @@ class Presque implements EventDispatcherAwareInterface, LoggerAwareInterface
         return $this->injectServices(
             $this->jobFactory->create($class, $args)
         );
+    }
+
+    public function setStorage(StorageInterface $storage = null)
+    {
+        $this->storage = $storage;
     }
 
     /**

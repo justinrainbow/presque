@@ -60,7 +60,7 @@ class PresqueTest extends TestCase
         $queue = $this->createQueueMock();
 
         $queueFactory
-            ->shouldReceive('create')->with('someClass')->once()->andReturn($queue);
+            ->shouldReceive('create')->with('someClass', null)->once()->andReturn($queue);
 
         $presque->createQueue('someClass');
     }
