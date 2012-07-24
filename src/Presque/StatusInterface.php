@@ -13,11 +13,11 @@ namespace Presque;
 
 interface StatusInterface
 {
-    CONST SUCCESS = 1;
-    CONST FAILED  = 2;
-    CONST RUNNING = 4;
-    CONST EXPIRED = 7;
-    CONST DYING   = 8;
-    CONST STOPPING = 13;
-    CONST STOPPED  = 14;
+    CONST SUCCESS  = 1;
+    CONST FAILED   = 2;
+    CONST RUNNING  = 4;
+    CONST DYING    = 8;
+    CONST PAUSED   = 16;
+    CONST STOPPING = 32;
+    CONST STOPPED  = 64;
 }

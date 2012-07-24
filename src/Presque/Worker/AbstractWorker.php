@@ -27,7 +27,7 @@ abstract class AbstractWorker implements WorkerInterface, LoggerAwareInterface, 
     protected $id;
     protected $status;
     protected $queues;
-    protected $eventDispatcher;
+    protected $dispatcher;
     protected $logger;
 
     public function __construct($id = null)
@@ -93,9 +93,9 @@ abstract class AbstractWorker implements WorkerInterface, LoggerAwareInterface, 
     /**
      * {@inheritDoc}
      */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null)
+    public function setEventDispatcher(EventDispatcherInterface $dispatcher = null)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -103,7 +103,7 @@ abstract class AbstractWorker implements WorkerInterface, LoggerAwareInterface, 
      */
     public function hasEventDispatcher()
     {
-        return null !== $this->eventDispatcher;
+        return null !== $this->dispatcher;
     }
 
     /**
@@ -120,5 +120,26 @@ abstract class AbstractWorker implements WorkerInterface, LoggerAwareInterface, 
     public function hasLogger()
     {
         return null !== $this->logger;
+    }
+
+    /**
+     * Wrapper for dispatching events.  The provided `$event` will be returned
+     * immediately if there is no EventDispatcher available.
+     *
+     * If there is an EventDispatcher, the `dispatch` event will be called, and
+     * the `$event` will still be returned.
+     *
+     * @param string $name  Event name to dispatch
+     * @param mixed  $event Event payload
+     *
+     * @return mixed $event
+     */
+    protected function dispatchEvent($name, $event)
+    {
+        if (!$this->hasEventDispatcher()) {
+            return $event;
+        }
+
+        return $this->dispatcher->dispatch($name, $event);
     }
 }

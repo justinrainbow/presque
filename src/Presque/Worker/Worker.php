@@ -44,21 +44,17 @@ class Worker extends AbstractWorker
      */
     public function start()
     {
-        if ($this->hasEventDispatcher()) {
-            $event = $this->eventDispatcher->dispatch(Events::WORK_STARTED, new WorkerEvent($this));
+        $event = $this->dispatchEvent(Events::WORK_STARTED, new WorkerEvent($this));
 
-            if ($event->isCanceled()) {
-                return;
-            }
+        if ($event->isCanceled()) {
+            return;
         }
 
         $this->setStatus(StatusInterface::RUNNING);
 
         $this->run();
 
-        if ($this->hasEventDispatcher()) {
-            $this->eventDispatcher->dispatch(Events::WORK_STOPPED, new WorkerEvent($this));
-        }
+        $this->dispatchEvent(Events::WORK_STOPPED, new WorkerEvent($this));
 
         $this->setStatus(StatusInterface::STOPPED);
     }
@@ -116,21 +112,17 @@ class Worker extends AbstractWorker
 
         $job->prepare();
 
-        if ($this->hasEventDispatcher()) {
-            $event = $this->eventDispatcher->dispatch(Events::JOB_STARTED, new JobEvent($job, $queue, $this));
+        $event = $this->dispatchEvent(Events::JOB_STARTED, new JobEvent($job, $queue, $this));
 
-            if ($event->isCanceled()) {
-                return;
-            }
-
-            $job = $event->getJob();
+        if ($event->isCanceled()) {
+            return;
         }
+
+        $job = $event->getJob();
 
         $job->perform();
 
-        if ($this->hasEventDispatcher()) {
-            $this->eventDispatcher->dispatch(Events::JOB_FINISHED, new JobEvent($job, $queue, $this));
-        }
+        $this->dispatchEvent(Events::JOB_FINISHED, new JobEvent($job, $queue, $this));
 
         $job->complete();
     }

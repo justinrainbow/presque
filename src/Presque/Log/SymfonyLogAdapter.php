@@ -21,7 +21,7 @@ class SymfonyLogAdapter extends AbstractLogAdapter
     /**
      * {@inheritdoc}
      */
-    public function __construct(SymfonyLoggerInterface $logObject)
+    public function __construct(SymfonyLoggerInterface $logObject = null)
     {
         $this->log = $logObject;
     }

@@ -11,7 +11,9 @@
 
 namespace Presque\Queue;
 
+use Presque\Storage\StorageInterface;
+
 interface QueueFactoryInterface
 {
-    function create($name);
+    function create($name, StorageInterface $storage = null, $timeout = 10);
 }
