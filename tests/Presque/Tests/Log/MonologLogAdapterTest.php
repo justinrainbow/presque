@@ -15,7 +15,7 @@ use Presque\Tests\TestCase;
 use Presque\Log\MonologLogAdapter;
 use Monolog\Logger;
 
-class MonologLogAdapterTest extends TestCase
+class MonologLogAdapterTest extends AbstractLogAdapterTest
 {
     protected $logger;
     protected $adapter;
@@ -31,18 +31,6 @@ class MonologLogAdapterTest extends TestCase
             ->with($this->equalTo("My message"));
 
         $this->adapter->{$level}("My message");
-    }
-
-    public function getLogLevels()
-    {
-        return array(
-            array('debug'),
-            array('info'),
-            array('warn'),
-            array('err'),
-            array('crit'),
-            array('emerg'),
-        );
     }
 
     protected function setUp()

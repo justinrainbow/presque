@@ -18,8 +18,14 @@ class ClosureLogAdapter implements LoggerInterface
 {
     protected $log;
 
-    public function __construct(\Closure $log = null)
+    public function __construct($log = null)
     {
+        if (null !== $log && !is_callable($log)) {
+            throw new \InvalidArgumentException(
+                'The ClosureLogAdapter must be provided a valid callable.'
+            );
+        }
+
         $this->log = $log;
     }
 
