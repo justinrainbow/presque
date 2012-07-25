@@ -25,6 +25,7 @@ class StorageFactory
             ));
         }
 
+        // @codeCoverageIgnoreStart
         if (extension_loaded('redis')) {
             $redis = new \Redis();
             $redis->connect($url['host'], isset($url['port']) ? $url['port'] : 6379);
@@ -35,6 +36,7 @@ class StorageFactory
 
             $storage = new PredisStorage($redis);
         }
+        // @codeCoverageIgnoreEnd
 
         if (null !== $prefix) {
             $storage->setPrefix($prefix);
