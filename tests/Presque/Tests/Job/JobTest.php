@@ -21,7 +21,7 @@ class JobTest extends TestCase
      */
     public function testCreatingAnInvalidJob()
     {
-        Job::create('NonExistant\Class', array(1, 2, 3));
+        Job::create('NonExistant\Class', array(1, 2, 3))->validate();
     }
 
     /**
@@ -29,7 +29,7 @@ class JobTest extends TestCase
      */
     public function testCreatingASimpleJobWithNoArguments()
     {
-        Job::create('Presque\Tests\Jobs\SimpleJob');
+        Job::create('Presque\Tests\Jobs\SimpleJob')->validate();
     }
 
     /**
@@ -37,7 +37,7 @@ class JobTest extends TestCase
      */
     public function testCreatingASimpleJobWithTooFewArguments()
     {
-        Job::create('Presque\Tests\Jobs\SimpleJob', array(1));
+        Job::create('Presque\Tests\Jobs\SimpleJob', array(1))->validate();
     }
 
     /**
@@ -45,7 +45,7 @@ class JobTest extends TestCase
      */
     public function testCreatingAJobWithInvalidPerformMethod()
     {
-        Job::create('Presque\Tests\Jobs\InvalidJob');
+        Job::create('Presque\Tests\Jobs\InvalidJob')->validate();
     }
 
     /**
@@ -53,7 +53,7 @@ class JobTest extends TestCase
      */
     public function testCreatingAJobWithPrivatePerformMethod()
     {
-        Job::create('Presque\Tests\Jobs\PrivateJob');
+        Job::create('Presque\Tests\Jobs\PrivateJob')->validate();
     }
 
     /**
@@ -61,12 +61,13 @@ class JobTest extends TestCase
      */
     public function testCreatingAnIncompleteJob()
     {
-        Job::create('Presque\Tests\Jobs\IncompleteJob');
+        Job::create('Presque\Tests\Jobs\IncompleteJob')->validate();
     }
 
     public function testCreatingASimpleJob()
     {
         $job = Job::create('Presque\Tests\Jobs\SimpleJob', array('simple', 'jobs'));
+        $job->validate();
 
         try {
             $job->perform();
@@ -84,6 +85,15 @@ class JobTest extends TestCase
 
         $job = Job::create('Presque\Tests\Jobs\SimpleJob', array('simple', 'job'));
         $this->assertTrue($job->perform()->isSuccessful());
+    }
+
+    public function testSendingJobEventToInstance()
+    {
+        $job = Job::create('Presque\Tests\Jobs\EventedJob');
+        $job->validate();
+        $job->perform();
+
+        $this->assertTrue($job->isSuccessful());
     }
 
 }

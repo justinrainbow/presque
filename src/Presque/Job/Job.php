@@ -67,26 +67,6 @@ class Job extends AbstractJob
 
         $method = $refl->getMethod('perform');
 
-        if (!$method->isPublic()) {
-            $visibility = 'unknown';
-            if ($method->isPrivate()) {
-                $visibility = 'private';
-            } elseif ($method->isProtected()) {
-                $visibility = 'protected';
-            }
-
-            throw new InvalidArgumentException(
-                'The "perform" method for class "' . $class . '" must be public, not ' . $visibility
-            );
-        }
-
-        if (count($args) < $method->getNumberOfRequiredParameters()) {
-            throw new InvalidArgumentException(
-                'The ' . $class . ' has ' . $method->getNumberOfRequiredParameters() . ' required '.
-                'arguments, but only ' . count($args) . ' were provided.'
-            );
-        }
-
         $this->class = $class;
         $this->args  = $args;
 
@@ -128,9 +108,13 @@ class Job extends AbstractJob
     public function perform()
     {
         try {
+            $args = $this->getArguments();
+            if ($this->isFirstParameterJobInterface()) {
+                array_unshift($args, $this);
+            }
             $this->lastResult = $this->reflMethod->invokeArgs(
                 $this->getInstance(),
-                $this->getArguments()
+                $args
             );
 
             $this->setStatus(StatusInterface::SUCCESS);
@@ -142,8 +126,52 @@ class Job extends AbstractJob
         return $this;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public function validate()
+    {
+        if (!$this->reflMethod->isPublic()) {
+            $visibility = 'unknown';
+            if ($this->reflMethod->isPrivate()) {
+                $visibility = 'private';
+            } elseif ($this->reflMethod->isProtected()) {
+                $visibility = 'protected';
+            }
+
+            throw new InvalidArgumentException(
+                'The "perform" method for class "' . $this->class . '" must be public, not ' . $visibility
+            );
+        }
+
+        $numberOfRequiredParameters = $this->reflMethod->getNumberOfRequiredParameters();
+        if ($this->isFirstParameterJobInterface()) {
+            $numberOfRequiredParameters--;
+        }
+
+        if (count($this->args) < $numberOfRequiredParameters) {
+            throw new InvalidArgumentException(
+                'The ' . $this->class . ' has ' . $numberOfRequiredParameters . ' required '.
+                'arguments, but only ' . count($this->args) . ' were provided.'
+            );
+        }
+
+        return true;
+    }
+
     public function __toString()
     {
         return (string) $this->getClass();
+    }
+
+    protected function isFirstParameterJobInterface()
+    {
+        $params = $this->reflMethod->getParameters();
+
+        if (0 < count($params)) {
+            return $params[0]->getClass() && $params[0]->getClass()->implementsInterface('Presque\\Job\\JobInterface');
+        }
+
+        return false;
     }
 }

@@ -22,3 +22,6 @@ EOT;
 $loader = require_once __DIR__.'/../vendor/autoload.php';
 $loader->add('Presque\Tests', __DIR__);
 $loader->register();
+
+// The test jobs are little... so they are all in one file
+require_once __DIR__.'/Presque/Tests/Jobs/TestJobs.php';

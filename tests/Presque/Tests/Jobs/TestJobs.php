@@ -11,6 +11,35 @@
 
 namespace Presque\Tests\Jobs;
 
+use Presque\Job\JobInterface;
+
+class EventedJob
+{
+    public function perform(JobInterface $job)
+    {
+    }
+}
+
+class IncompleteJob
+{
+}
+
+class InvalidJob
+{
+    protected function perform()
+    {
+        throw new \RuntimeException('The InvalidJob should never be performed!');
+    }
+}
+
+class PrivateJob
+{
+    private function perform()
+    {
+        throw new \RuntimeException('The PrivateJob should never be performed!');
+    }
+}
+
 class SimpleJob
 {
     public function perform($arg1, $arg2)
