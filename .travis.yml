@@ -5,8 +5,7 @@ php:
   - 5.4
 
 before_script:
-  - wget --quiet http://getcomposer.org/composer.phar
-  - php composer.phar install --dev
-  - cp phpunit.xml.dist phpunit.xml
+  - ./tests/redis-installer.sh
+  - composer install --dev
 
-script: phpunit
+script: phpunit -c phpunit.xml.dist --coverage-text
