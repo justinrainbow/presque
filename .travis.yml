@@ -10,5 +10,5 @@ before_script:
 
 # Traits are a no-no for PHP 5.3 - so don't run code coverage reports
 script:
-  - if [[ "$TRAVIS_PHP_VERSION" == "5.3" ]]; then phpunit -c phpunit.xml.dist
-  - if [[ "$TRAVIS_PHP_VERSION" == "5.4" ]]; then phpunit -c phpunit.xml.dist --coverage-text
+  - if [[ "$TRAVIS_PHP_VERSION" == "5.3" ]]; then phpunit -c phpunit.xml.dist; fi
+  - if [[ "$TRAVIS_PHP_VERSION" == "5.4" ]]; then phpunit -c phpunit.xml.dist --coverage-text; fi
