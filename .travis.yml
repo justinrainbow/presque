@@ -8,4 +8,7 @@ before_script:
   - ./tests/redis-installer.sh
   - composer install --dev
 
-script: phpunit -c phpunit.xml.dist --coverage-text
+# Traits are a no-no for PHP 5.3 - so don't run code coverage reports
+script:
+  - if [[ "$TRAVIS_PHP_VERSION" == "5.3" ]]; then phpunit -c phpunit.xml.dist
+  - if [[ "$TRAVIS_PHP_VERSION" == "5.4" ]]; then phpunit -c phpunit.xml.dist --coverage-text
