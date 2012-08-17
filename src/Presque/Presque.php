@@ -3,6 +3,7 @@
 namespace Presque;
 
 use Presque\Event\GetWorkerEvent;
+use Presque\Event\PostWorkerEvent;
 use Presque\Job\DescriptionInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -36,6 +37,9 @@ class Presque
         if ($event->hasWorker()) {
             $worker = $event->getWorker();
             $result = call_user_func($worker, $job);
+
+            $event = new PostWorkerEvent($result, $job, $worker);
+            $this->dispatcher->dispatch(Events::RESULT, $event);
         }
     }
 
