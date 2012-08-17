@@ -1,90 +1,42 @@
 <?php
 
-/*
- * This file is part of the Presque package.
- *
- * (c) Justin Rainbow <justin.rainbow@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Presque\Tests;
 
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Presque\Presque;
+use Presque\Events;
+use Presque\Event\GetWorkerEvent;
+use Presque\Job\Description;
 use Mockery as m;
 
-class PresqueTest extends TestCase
+class PresqueTest extends \PHPUnit_Framework_TestCase
 {
-    public function testInjectingEventDispatcher()
+    public function testHandlingJobDescription()
     {
-        $workerFactory = $this->createWorkerFactoryMock();
-        $queueFactory  = $this->createQueueFactoryMock();
-        $jobFactory    = $this->createJobFactoryMock();
-        $dispatcher    = $this->createEventDispatcher();
-        $logger        = $this->createLoggerMock();
+        $dispatcher = $this->mockEventDispatcher();
 
-        $presque = new Presque($workerFactory, $queueFactory, $jobFactory);
-        $presque->setEventDispatcher($dispatcher);
+        $presque = new Presque($dispatcher);
 
-        $worker = $this->createEventDispatcherAwareMock();
-        $worker
-            ->shouldReceive('setEventDispatcher')->with($dispatcher)->once();
+        $workEventValidator = m::on(function ($event) {
+            if (!$event instanceof GetWorkerEvent) {
+                throw new \InvalidArgumentException('Expected a Presque\Event\GetWorkerEvent but got '.get_class($event));
+            }
 
-        $workerFactory
-            ->shouldReceive('create')->with(null)->once()->andReturn($worker);
+            return true;
+        });
 
-        $presque->createWorker();
+        $dispatcher
+            ->shouldReceive('dispatch')->with(Events::WORK, $workEventValidator)->once()->ordered();
 
-        $presque->setEventDispatcher(null);
-        $presque->setLogger($logger);
-
-        $worker = $this->createLoggerAwareMock();
-        $worker
-            ->shouldReceive('setLogger')->with($logger)->once();
-
-        $workerFactory
-            ->shouldReceive('create')->with(null)->once()->andReturn($worker);
-
-        $presque->createWorker();
-
-        $presque->setLogger(null);
-        $job = $this->createJobMock();
-
-        $jobFactory
-            ->shouldReceive('create')->with('someClass', array())->once()->andReturn($job);
-
-        $presque->createJob('someClass');
-
-        $queue = $this->createQueueMock();
-
-        $queueFactory
-            ->shouldReceive('create')->with('someClass', null)->once()->andReturn($queue);
-
-        $presque->createQueue('someClass');
+        $presque->handle(new Description());
     }
 
-    public function testCreatingJob()
+    protected function mockEventDispatcher()
     {
-        $presque = new Presque();
-
-        $this->assertInstanceOf('Presque\Job\JobInterface', $presque->createJob(
-            'Presque\Tests\Jobs\SimpleJob', array('simple', 'jobs')
-        ));
+        return m::mock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
     }
 
-    public function testCreatingQueue()
+    protected function tearDown()
     {
-        $presque = new Presque();
-
-        $this->assertInstanceOf('Presque\Queue\QueueInterface', $presque->createQueue('queue'));
-    }
-
-    public function testCreatingWorker()
-    {
-        $presque = new Presque();
-
-        $this->assertInstanceOf('Presque\Worker\WorkerInterface', $presque->createWorker());
+        m::close();
     }
 }

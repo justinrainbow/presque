@@ -1,159 +1,45 @@
 <?php
 
-/*
- * This file is part of the Presque package.
- *
- * (c) Justin Rainbow <justin.rainbow@gmail.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace Presque;
 
-use Presque\Worker\WorkerFactory;
-use Presque\Worker\WorkerFactoryInterface;
-use Presque\Queue\QueueFactory;
-use Presque\Queue\QueueFactoryInterface;
-use Presque\Job\JobFactory;
-use Presque\Job\JobFactoryInterface;
-use Presque\Event\EventDispatcherAwareInterface;
-use Presque\Log\LoggerAwareInterface;
-use Presque\Log\LoggerInterface;
-use Presque\Storage\StorageInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Presque\Event\GetWorkerEvent;
+use Presque\Job\DescriptionInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-class Presque implements EventDispatcherAwareInterface, LoggerAwareInterface
+class Presque
 {
-    const VERSION = "0.1.0";
+    private $dispatcher;
 
-    private static $eventSubscribers = array(
-        'Presque\EventListener\JobRetryListener'
-    );
-
-    protected $workerFactory;
-    protected $queueFactory;
-    protected $jobFactory;
-    protected $dispatcher;
-    protected $logger;
-    protected $storage;
-
-    public function __construct(
-        WorkerFactoryInterface $workerFactory = null,
-        QueueFactoryInterface $queueFactory = null,
-        JobFactoryInterface $jobFactory = null,
-        EventDispatcherInterface $dispatcher = null,
-        LoggerInterface $logger = null
-    )
+    public function __construct(EventDispatcherInterface $eventDispatcher)
     {
-        if (null === $dispatcher) {
-            $dispatcher = new EventDispatcher();
-            foreach (static::$eventSubscribers as $class) {
-                $dispatcher->addSubscriber(new $class());
+        $this->dispatcher = $eventDispatcher;
+    }
+
+    public function handle(DescriptionInterface $job, $catchException = true)
+    {
+        try {
+            $this->handleRaw($job);
+        } catch (\Exception $e) {
+            if (true !== $catchException) {
+                throw $e;
             }
+
+            $this->handleException($e, $job);
         }
-
-        $this->workerFactory = $workerFactory ?: new WorkerFactory();
-        $this->queueFactory  = $queueFactory  ?: new QueueFactory();
-        $this->jobFactory    = $jobFactory    ?: new JobFactory();
-        $this->dispatcher    = $dispatcher;
-        $this->logger        = $logger;
     }
 
-    /**
-     * @see Presque\Worker\WorkerFactoryInterface::create
-     */
-    public function createWorker($id = null)
+    private function handleRaw(DescriptionInterface $job)
     {
-        return $this->injectServices(
-            $this->workerFactory->create($id)
-        );
-    }
+        $event = new GetWorkerEvent($job);
+        $this->dispatcher->dispatch(Events::WORK, $event);
 
-    /**
-     * @see Presque\Queue\QueueFactoryInterface::create
-     */
-    public function createQueue($name, StorageInterface $storage = null)
-    {
-        if (null === $storage && null !== $this->storage) {
-            $storage = $this->storage;
+        if ($event->hasWorker()) {
+            $worker = $event->getWorker();
+            $result = call_user_func($worker, $job);
         }
-
-        return $this->injectServices(
-            $this->queueFactory->create($name, $storage)
-        );
     }
 
-    /**
-     * @see Presque\Job\JobFactoryInterface::create
-     */
-    public function createJob($class, array $args = array())
+    private function handleException(\Exception $exception, DescriptionInterface $job)
     {
-        return $this->injectServices(
-            $this->jobFactory->create($class, $args)
-        );
-    }
-
-    public function setStorage(StorageInterface $storage = null)
-    {
-        $this->storage = $storage;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setEventDispatcher(EventDispatcherInterface $dispatcher = null)
-    {
-        $this->dispatcher = $dispatcher;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hasEventDispatcher()
-    {
-        return null !== $this->dispatcher;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setLogger(LoggerInterface $logger = null)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function hasLogger()
-    {
-        return null !== $this->logger;
-    }
-
-    /**
-     * Injects instances of the EventDispatcher and Logger to objects that implement
-     * the EventDispatcherAwareInterface or the LoggerAwareInterface.
-     *
-     * @param mixed $object
-     *
-     * @return mixed $object injected with the services
-     */
-    protected function injectServices($object)
-    {
-        if ($this->hasEventDispatcher()) {
-            if ($object instanceof EventDispatcherAwareInterface) {
-                $object->setEventDispatcher($this->dispatcher);
-            }
-        }
-
-        if ($this->hasLogger()) {
-            if ($object instanceof LoggerAwareInterface) {
-                $object->setLogger($this->logger);
-            }
-        }
-
-        return $object;
     }
 }
