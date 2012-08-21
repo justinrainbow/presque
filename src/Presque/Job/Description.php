@@ -2,7 +2,7 @@
 
 namespace Presque\Job;
 
-class Description implements DescriptionInterface, \ArrayAccess
+class Description implements DescriptionInterface, \ArrayAccess, \Countable
 {
     protected $arguments;
 
@@ -33,5 +33,10 @@ class Description implements DescriptionInterface, \ArrayAccess
     public function offsetGet($offset)
     {
         return $this->arguments[$offset];
+    }
+
+    public function count()
+    {
+        return count($this->arguments);
     }
 }

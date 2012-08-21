@@ -14,14 +14,9 @@ abstract class AbstractJobEvent extends AbstractEvent
         $this->job = $description;
     }
 
-    public function setJobDescription(JobDescriptionInterface $description)
+    public function setJob(JobDescriptionInterface $description)
     {
         $this->job = $description;
-    }
-
-    public function getJobDescription()
-    {
-        return $this->getJob();
     }
 
     public function getJob()
