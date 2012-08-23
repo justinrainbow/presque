@@ -4,6 +4,7 @@ namespace Presque\Event;
 
 use Presque\Exception\InvalidWorkerException;
 use Symfony\Component\EventDispatcher\Event as AbstractEvent;
+use Presque\Util;
 
 class GetWorkerEvent extends AbstractJobEvent
 {
@@ -12,7 +13,10 @@ class GetWorkerEvent extends AbstractJobEvent
     public function setWorker($callable)
     {
         if (!is_callable($callable)) {
-            throw new InvalidWorkerException();
+            throw new \InvalidArgumentException(sprintf(
+                'Invalid callable provided (got %s)',
+                Util::dump($callable)
+            ));
         }
 
         $this->worker = $callable;

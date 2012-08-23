@@ -8,7 +8,7 @@ class GetWorkerEventTest extends \PHPUnit_Framework_TestCase
 {
     public function testExceptionThrownWithInvalidWorker()
     {
-        $this->setExpectedException('Presque\Exception\InvalidWorkerException');
+        $this->setExpectedException('InvalidArgumentException', 'Invalid callable provided (got null)');
 
         $event = new GetWorkerEvent();
         $event->setWorker(null);

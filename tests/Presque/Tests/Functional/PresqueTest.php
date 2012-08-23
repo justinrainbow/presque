@@ -57,15 +57,6 @@ class PresqueTest extends \PHPUnit_Framework_TestCase
         $presque->handle($description, false);
     }
 
-    /**
-     * @expectedException Presque\Exception\WorkerNotFoundException
-     */
-    public function testUnhandledWorkRequest()
-    {
-        $presque = new Presque(new EventDispatcher());
-        $presque->handle(new Description(), false);
-    }
-
     protected function createEventDispatcher(array $listeners)
     {
         $dispatcher = new EventDispatcher();

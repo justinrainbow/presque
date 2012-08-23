@@ -2,11 +2,13 @@
 
 namespace Presque\Event;
 
+use Symfony\Component\HttpFoundation\Response;
+
 class FilterResponseEvent extends AbstractJobEvent
 {
     private $response;
 
-    public function __construct($job, $response)
+    public function __construct($job, Response $response)
     {
         $this->response = $response;
 
@@ -21,7 +23,5 @@ class FilterResponseEvent extends AbstractJobEvent
     public function setResponse(Response $response)
     {
         $this->response = $response;
-
-        $this->stopPropagation();
     }
 }

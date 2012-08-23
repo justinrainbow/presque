@@ -14,8 +14,8 @@ class EntryArchiver implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::WORK   => 'onWorkEvent',
-            Events::RESULT => 'verifyComplete'
+            Events::REQUEST => 'onWorkEvent',
+            Events::RESULT  => 'verifyComplete'
         );
     }
 
