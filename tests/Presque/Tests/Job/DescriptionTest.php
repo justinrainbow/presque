@@ -13,15 +13,6 @@ class DescriptionTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Presque\Job\DescriptionInterface', $description);
     }
 
-    /**
-     * @expectedException PHPUnit_Framework_Error
-     * @expectedExceptionMessage Argument 1 passed to Presque\Job\Description::__construct() must be an array, string given
-     */
-    public function testInvalidConstructArguments()
-    {
-        new Description('blue');
-    }
-
     public function testArrayAccessDescription()
     {
         $description = new Description(array('water' => 'blue'));
