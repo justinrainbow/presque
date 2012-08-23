@@ -26,5 +26,7 @@ class GiveawayProcessingTest extends \PHPUnit_Framework_TestCase
 
         $presque = new Presque($dispatcher);
         $result = $presque->handle($giveaway, false);
+
+        $this->assertTrue($result->isSuccessful());
     }
 }

@@ -4,6 +4,7 @@ namespace Presque\Tests\Event;
 
 use Presque\Event\PostWorkerEvent;
 use Presque\Job\Description;
+use Symfony\Component\HttpFoundation\Response;
 
 class PostWorkerEventTest extends \PHPUnit_Framework_TestCase
 {
@@ -26,7 +27,19 @@ class PostWorkerEventTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Presque\Event\PostWorkerEvent', $event);
         $this->assertInstanceOf('Presque\Job\DescriptionInterface', $event->getJob());
-        $this->assertEquals(null, $event->getResult());
+        $this->assertEquals(null, $event->getResponse());
         $this->assertTrue(is_callable($event->getWorker()));
+    }
+
+    public function testSettingResponseStopsEvent()
+    {
+        $result = null;
+        $worker = function(){};
+        $job    = new Description();
+
+        $event = new PostWorkerEvent($result, $job, $worker);
+        $event->setResponse(new Response('OK'));
+
+        $this->assertTrue($event->isPropagationStopped(), 'Event should be stopped after a Response is set');
     }
 }

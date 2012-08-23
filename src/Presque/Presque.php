@@ -2,10 +2,14 @@
 
 namespace Presque;
 
+use Presque\Exception\InvalidWorkerException;
+use Presque\Exception\WorkerNotFoundException;
+use Presque\Event\FilterResponseEvent;
 use Presque\Event\GetWorkerEvent;
 use Presque\Event\PostWorkerEvent;
 use Presque\Job\DescriptionInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class Presque
 {
@@ -19,13 +23,13 @@ class Presque
     public function handle(DescriptionInterface $job, $catchException = true)
     {
         try {
-            $this->handleRaw($job);
+            return $this->handleRaw($job);
         } catch (\Exception $e) {
             if (true !== $catchException) {
                 throw $e;
             }
 
-            $this->handleException($e, $job);
+            return $this->handleException($e, $job);
         }
     }
 
@@ -34,16 +38,91 @@ class Presque
         $event = new GetWorkerEvent($job);
         $this->dispatcher->dispatch(Events::WORK, $event);
 
-        if ($event->hasWorker()) {
-            $worker = $event->getWorker();
-            $result = call_user_func($worker, $job);
-
-            $event = new PostWorkerEvent($result, $job, $worker);
-            $this->dispatcher->dispatch(Events::RESULT, $event);
+        if (!$event->hasWorker()) {
+            throw new WorkerNotFoundException(
+                'Unable to find a worker to process this job',
+                $job
+            );
         }
+
+        $worker = $event->getWorker();
+        $result = call_user_func($worker, $job);
+
+        if ($result instanceof Response) {
+            return $this->filterResponse($result, $job);
+        }
+
+        $event = new PostWorkerEvent($result, $job, $worker);
+        $this->dispatcher->dispatch(Events::RESULT, $event);
+
+        if ($event->hasResponse()) {
+            $result = $event->getResponse();
+        }
+
+        if (!$result instanceof Response) {
+            $msg = sprintf('The worker must return a Response object (%s given)', $this->varToString($result));
+
+            throw new \LogicException($msg);
+        }
+
+        return $this->filterResponse($result, $job);
+    }
+
+    /**
+     * Filters a response object.
+     *
+     * @param Response $response A Response instance
+     * @param DescriptionInterface $job Describes the work needed to be done
+     *
+     * @return Response The filtered Response instance
+     *
+     * @throws \RuntimeException if the passed object is not a Response instance
+     */
+    private function filterResponse(Response $response, DescriptionInterface $job)
+    {
+        $event = new FilterResponseEvent($job, $response);
+
+        $this->dispatcher->dispatch(Events::RESPONSE, $event);
+
+        return $event->getResponse();
     }
 
     private function handleException(\Exception $exception, DescriptionInterface $job)
     {
+        return new Response($exception->getMessage(), 500);
+    }
+
+    private function varToString($var)
+    {
+        if (is_object($var)) {
+            return sprintf('Object(%s)', get_class($var));
+        }
+
+        if (is_array($var)) {
+            $a = array();
+            foreach ($var as $k => $v) {
+                $a[] = sprintf('%s => %s', $k, $this->varToString($v));
+            }
+
+            return sprintf("Array(%s)", implode(', ', $a));
+        }
+
+        if (is_resource($var)) {
+            return sprintf('Resource(%s)', get_resource_type($var));
+        }
+
+        if (null === $var) {
+            return 'null';
+        }
+
+        if (false === $var) {
+            return 'false';
+        }
+
+        if (true === $var) {
+            return 'true';
+        }
+
+        return (string) $var;
     }
 }

@@ -7,6 +7,7 @@ use Presque\Presque;
 use Presque\Event\GetWorkerEvent;
 use Presque\Job\Description;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpFoundation\Response;
 use Mockery as m;
 
 class PresqueTest extends \PHPUnit_Framework_TestCase
@@ -15,7 +16,7 @@ class PresqueTest extends \PHPUnit_Framework_TestCase
     {
         $test = $this;
         $worker = function () {
-
+            return new Response();
         };
 
         $workEventListeners = array(
@@ -44,8 +45,8 @@ class PresqueTest extends \PHPUnit_Framework_TestCase
         );
 
         $dispatcher = $this->createEventDispatcher(array(
-            Events::WORK   => $workEventListeners,
-            Events::RESULT => $postWorkEventListeners
+            Events::WORK     => $workEventListeners,
+            Events::RESPONSE => $postWorkEventListeners
         ));
 
         $description = new Description(array(
@@ -54,6 +55,15 @@ class PresqueTest extends \PHPUnit_Framework_TestCase
 
         $presque = new Presque($dispatcher);
         $presque->handle($description, false);
+    }
+
+    /**
+     * @expectedException Presque\Exception\WorkerNotFoundException
+     */
+    public function testUnhandledWorkRequest()
+    {
+        $presque = new Presque(new EventDispatcher());
+        $presque->handle(new Description(), false);
     }
 
     protected function createEventDispatcher(array $listeners)
